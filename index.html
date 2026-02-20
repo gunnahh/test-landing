@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plaimanas Landing Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+  <body>
+    <div id="app">
+        <header class="bg-white text-black py-4 px-8 h-[45px] flex items-center justify-between relative z-50 header"
+            x-data="{ 
+                scrolled: false,
+                mobileMenuOpen: false,
+                init() {
+                    window.addEventListener('scroll', () => {
+                        this.scrolled = window.scrollY > 50;
+                    });
+                }
+            }"
+            :class="{ 'scrolled': scrolled }">
+            <div class="flex w-full items-center" x-data="languageSwitcher()" x-init="init()">
+                <!-- Language Dropdown -->
+                <div class="relative group" 
+                x-data="{ open: false, isHovering: false }" 
+                @mouseenter="isHovering = true" 
+                @mouseleave="isHovering = false">
+                    <!-- Selected Language Button -->
+                    <button @click="open = !open" 
+                            class="flex items-center hover:opacity-40 transition-opacity duration-300 text-[13px]"
+                            :class="{ 
+                        'opacity-50': isHovering
+                    }">
+                        <!-- Flag Icon -->
+                        <span x-show="currentLanguage === 'th'">TH - THB</span>
+                        <span x-show="currentLanguage === 'en'" >US - USD</span>
+                        <!-- Arrow Icon -->
+                        <i class="fas fa-chevron-down text-sm transition-transform duration-300" 
+                            :class="{ 'rotate-180': open }"></i>
+                            <img src="src/assets/images/icon-dropdown.svg" class="ml-[6px]" alt="dropdown icon" />
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div
+                        @click.away="open = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute bg-white opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                                transition-all duration-200 right-0 mt-2 w-[72px] text-[13px] z-50"
+                                :class="{ 
+                                'opacity-100 visible translate-y-0': isHovering,
+                                'opacity-0 invisible -translate-y-2': !isHovering
+                                }">
+
+                        <!-- Thai Option -->
+                        <button x-show="currentLanguage === 'en'" @click="switchLanguage('th'); open = false" 
+                                class="w-full text-center border-none flex items-center h-[36px]"
+                                :class="{ 'bg-indigo-50 text-black': currentLanguage === 'th' }">
+                            <span class="flex-1 font-normal">TH - THB</span>
+                        </button>
+                        
+                        <!-- English Option -->
+                        <button x-show="currentLanguage === 'th'" @click="switchLanguage('en'); open = false" 
+                                class="w-full text-center border-none flex items-center h-[36px]"
+                                :class="{ 'bg-indigo-50 text-black': currentLanguage === 'en' }">
+                            
+                            <span class="flex-1 font-normal">US - USD</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Other Nav Items (เปลี่ยนตามภาษา) -->
+                <div x-data="{ showSubMenu: false }" class="max-w-md mx-auto">
+                    <nav class="hidden md:flex space-x-6 text-[13px]">
+                        <a href="#" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('women')">ผู้หญิง</a>
+                        <a href="#" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('collections')">คอลแล็คชั่น</a>
+                        <a href="#" @mouseenter="showSubMenu = true" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('editorial')">บทความ</a>
+                        <a href="#" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('news')">ข่าว</a>
+                        <a href="#" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('stories')">เรื่องราว</a>
+                    </nav>
+                    <div class="fixed top-4 left-4 z-50">
+                        <!-- SubMenu Full Screen Menu -->
+                        <div x-show="showSubMenu" 
+                                @mouseleave="showSubMenu = false"
+                                class="fixed inset-0 bg-black z-40 flex justify-center">
+                            
+                            <div class="absolute top-0 max-w-sm pt-4" @mouseenter="showSubMenu = true" @mouseleave="showSubMenu = false">
+                                <div class="space-y-1 pl-12">
+                                    <a href="#" class="text-white block transition-transform duration-100 hover:font-bold uppercase mb-3" x-text="t('editorial')">บทความ</a>
+                                    <a href="#" class="text-white text-[13px] font-light block transition-transform duration-100 hover:font-bold uppercase">A.S.C</a>
+                                    <a href="#" class="text-white text-[13px] font-light block transition-transform duration-100 hover:font-bold uppercase">Bazaar</a>
+                                    <a href="#" class="text-white text-[13px] font-light block transition-transform duration-100 hover:font-bold uppercase">elle</a>
+                                    <a href="#" class="text-white text-[13px] font-light block transition-transform duration-100 hover:font-bold uppercase">gq</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div x-data="{ open: false, subOpen: false }">
+                    <!--Hamburger menu-->
+                    <div class="md:hidden absolute w-[30px] h-[6px] inset-0 flex flex-col items-center justify-center mx-auto text-[13px]">
+                        <button @click="open = !open; if(!open) subOpen = false" class="relative w-[20px] h-[6px] focus:outline-none">
+                            <span
+                                class="absolute left-0 w-[20px] h-[0.5px] bg-black transform transition-all duration-300"
+                                :class="open ? 'rotate-45 top-[22px] w-[25px]' : 'top-[20px]'">
+                            </span>
+                            <span
+                                class="absolute left-0 w-[20px] h-[0.5px] bg-black transform transition-all duration-300"
+                                :class="open ? '-rotate-45 top-[22px] w-[25px]' : 'top-[28px]'">
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- MODAL -->
+                    <div
+                        x-show="open"
+                        x-transition
+                        @click.outside="open = false; subOpen = false"
+                        class="fixed top-[44px] left-0 w-full 
+                        h-[calc(100vh-45px)] 
+                        bg-white text-black 
+                        z-40 overflow-y-auto"
+                    >
+                        <nav class="flex flex-col p-8 space-y-3 items-center text-xl">
+                            <a href="" title="Women" class="text-black text-[13px] uppercase">Women</a>
+                            <a href="" title="Collections" class="text-black text-[13px] uppercase">Collections</a>
+
+                            <!-- EDITORIAL WITH SUBMENU -->
+                            <div class="flex flex-col">
+                                <!-- Parent Menu -->
+                                <button 
+                                    @click="subOpen = !subOpen"
+                                    class="flex items-center justify-between w-full"
+                                >
+                                    <span class="pr-2 text-black text-[13px] uppercase"
+                                        :class="subOpen ? 'font-[700] text-[24px]' : ''">
+                                        Editorial
+                                    </span>
+
+                                    <img 
+                                        src="src/assets/images/icon-dropdown-submenu.svg"
+                                        alt="Icon Submenu"
+                                        class="transition-transform duration-200"
+                                        :class="subOpen ? 'rotate-180' : ''">
+                                </button>
+
+                                <!-- Submenu -->
+                                <div 
+                                    x-show="subOpen"
+                                    x-transition
+                                    class="flex flex-col items-center my-4 space-y-2 text-lg"
+                                >
+                                    <a href="" title="A.S.C" class="text-black text-[13px] uppercase">A.S.C</a>
+                                    <a href="" title="Bazaar" class="text-black text-[13px] uppercase">Bazaar</a>
+                                    <a href="" title="Elle" class="text-black text-[13px] uppercase">Elle</a>
+                                    <a href="" title="GQ" class="text-black text-[13px] uppercase">Gq</a>
+                                    <a href="" title="L’official thailand" class="text-black text-[13px] uppercase">L’official thailand</a>
+                                    <a href="" title="numero" class="text-black text-[13px] uppercase">numero</a>
+                                    <a href="" title="vogue" class="text-black text-[13px] uppercase">vogue</a>
+                                </div>
+                            </div>
+
+                            <a href="" title="News" class="text-black text-[13px] uppercase">News</a>
+                            <a href="" title="Stories" class="text-black text-[13px] uppercase">Stories</a>
+                        </nav>
+
+                        <h2 class="fixed bottom-[16px] left-0 z-50 w-full flex items-center justify-center px-6 mix-blend-difference">
+                            <img id="plaimanas-logo" src="src/assets/images/plaimanas-logo.svg" alt="Plaimanas Logo"
+                            class="transition-all duration-500 filter brightness-0 invert w-full"
+                            />
+                        </h2>
+                    </div>
+                </div>
+                
+                <nav class="text-[13px] space-x-5 flex">
+                    <a href="#" class="text-black transition-transform duration-100 hover:font-bold hover:scale-110 uppercase" x-text="t('signin')">เข้าสู่ระบบ</a>
+                    <a href="#" class="text-black transition-transform duration-100">
+                        <img src="src/assets/images/icons-bag-shopping.svg" alt="shopping icon">
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="w-full relative mt-[45px]">
+            <h1 class="fixed top-[70px] left-0 z-50 w-full flex items-center justify-center px-6 mix-blend-difference">
+                <img id="plaimanas-logo" src="src/assets/images/plaimanas-logo.svg" alt="Plaimanas Logo"
+                x-data="{ 
+                    scrolled: false,
+                    init() {
+                        window.addEventListener('scroll', () => {
+                            this.scrolled = window.scrollY > 50;
+                        });
+                    }
+                }"
+                :class="{
+                    'w-[309px]': scrolled,
+                    'w-full': !scrolled
+                }"
+                class="transition-all duration-500 filter brightness-0 invert"
+                />
+            </h1>
+            <div class="swiper hero-swiper w-full relative overflow-hidden z-30">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1: Video -->
+                    <div class="swiper-slide" data-type="video">
+                        <video class="w-full h-full object-cover"
+                            src="src/assets/video/mockup_video576.mp4"
+                            muted 
+                            loop
+                            autoplay
+                            playsinline></video>
+                    </div>
+                    <!-- Slide 1: Image -->
+                    <div class="swiper-slide" data-type="image">
+                        <img src="https://storage.googleapis.com/stateless-thaicatwalk-com/2016/03/hili2.jpg" alt="Slide 2">
+                    </div>
+                </div>
+            </div>
+            <!-- Slide End -->
+
+            <section 
+                x-data="{ 
+                    scrollOffset: 0,
+                    updateOffset() {
+                        // คำนวณหาตำแหน่งของ section เทียบกับด้านบนของจอ
+                        let rect = $el.getBoundingClientRect();
+                        // ถ้า section เริ่มเข้ามาในจอ ให้เริ่มคำนวณ (ติดลบคือเลื่อนขึ้นไปแล้ว)
+                        this.scrollOffset = Math.max(0, -rect.top);
+                    }
+                }"
+                x-init="window.addEventListener('scroll', () => updateOffset())"
+                class="flex justify-center pt-24 flex-col items-center md:max-w-[715px] mx-auto relative bg-white" 
+            >
+                <div class="sticky top-20">
+                    <div class="relative max-w-[282px] md:max-w-[566px] max-h-[572px] overflow-hidden">
+                        <img src="src/assets/images/new-bg.png" alt="New Collection" class="w-full object-cover" />
+
+                        <div class="absolute inset-0 flex justify-center items-center text-center pointer-events-none">
+                            <h2 
+                                class="font-heading font-[900] text-[40px] md:text-[80px] text-white"
+                                :style="`transform: translateY(${Math.min(scrollOffset * 0.45, 280)}px)`"
+                            >
+                                NEW
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="max-w-[715px] px-6 mx-auto py-4 text-center bg-white">
+                <h3 class="font-semibold text-lg my-3">Sed egestas, nibh a condimentum</h3>
+                <p class="text-sm text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo, turpis elit ultricies justo, vitae molestie quam justo ut lacus. Proin vitae</p>
+            </section>
+
+            <section 
+                x-data="{ 
+                    scrollOffset: 0,
+                    updateOffset() {
+                        // คำนวณหาตำแหน่งของ section เทียบกับด้านบนของจอ
+                        let rect = $el.getBoundingClientRect();
+                        // ถ้า section เริ่มเข้ามาในจอ ให้เริ่มคำนวณ (ติดลบคือเลื่อนขึ้นไปแล้ว)
+                        this.scrollOffset = Math.max(0, -rect.top);
+                    }
+                }"
+                x-init="window.addEventListener('scroll', () => updateOffset())"
+                class="bg-white flex justify-center pt-24 flex-col items-center max-w-[1200px] mx-4 md:mx-auto relative" 
+            >
+                <div class="sticky top-20">
+                    <div class="relative px-1 xl:px-0 max-h-[759px] overflow-hidden">
+                        <video class="w-full h-full object-cover"
+                            src="src/assets/video/DTS_THE_LEADER_Joey_Bania_Clips_ID10.mp4"
+                            muted 
+                            loop
+                            autoplay
+                            playsinline></video>
+
+                        <div class="absolute inset-0 flex justify-center items-center text-center pointer-events-none">
+                            <h2 
+                                class="font-heading font-[900] text-[40px] md:text-[80px] text-white"
+                                :style="`transform: translateY(${Math.min(scrollOffset * 0.54, 280)}px)`"
+                            >
+                                BESTSELLER
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="max-w-[715px] px-6 mx-auto relative bg-white pb-24">
+                <h3 class="font-semibold text-[16px] my-3 pt-1 text-center">Sed egestas, nibh a condimentum imperdiet</h3>
+                <p class="text-sm text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo, turpis elit ultricies justo, vitae molestie quam justo ut lacus. Proin vitae</p>
+            </section>
+
+         
+            <section class="bg-white relative max-w-[978px] min-h-[167px] sm:min-h-[267px] md:min-h-[475px] mx-4 md:mx-auto cursor-pointer group">
+                <video 
+                    class="absolute top-0 left-0 w-full h-full object-cover"
+                    autoplay 
+                    loop 
+                    muted 
+                    playsinline
+                >
+                    <source src="src/assets/video/DTS_THE_LEADER_Joey_Bania_Clips_ID10.mp4" type="video/mp4">
+                </video>
+                
+                <img 
+                    src="src/assets/images/collection-01.png" 
+                    alt="Collection 01" 
+                    class="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out group-hover:opacity-0 z-10"
+                >
+                
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-20 w-full px-5">
+                    <h2 class="text-white text-center text-[30px] md:text-[60px] font-heading font-[900]">
+                        COLLECTION 01
+                    </h2>
+                </div>
+            </section>
+
+            <section class="max-w-[978px] mx-auto my-8 md:my-14 px-4 md:px-0 bg-white">
+                <div class="grid grid-cols-2 gap-8 justify-between">
+                    <div class="flex mb-8">
+                        <div class="relative min-h-[161px] md:h-[455px] overflow-hidden group cursor-pointer">
+                            <img 
+                            src="src/assets/images/collection-02.png"
+                            alt="Collection 02"
+                            class="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0"
+                            />
+                            <img 
+                            src="src/assets/images/collection-hover.png"
+                            alt="Collection 02 Hover"
+                            class="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
+                            />
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <h2 class="text-white text-center text-[18px] md:text-[40px] font-heading font-[900]">
+                                    COLLECTION 02
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex mb-8">
+                        <div class="relative ml-auto min-h-[161px] md:h-[455px] overflow-hidden group cursor-pointer">
+                            <img 
+                            src="src/assets/images/collection-03.png"
+                            alt="Collection 03"
+                            class="w-full h-full object-cover transition-opacity duration-700 ease-in-out group-hover:opacity-0"
+                            />
+                            <img 
+                            src="src/assets/images/collection-hover.png"
+                            alt="Collection 03 Hover"
+                            class="absolute top-0 left-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
+                            />
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <h2 class="text-white text-center text-[18px] md:text-[40px] font-heading font-[900]">
+                                    COLLECTION 03
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="scrolling-slide w-full bg-black mt-14 md:mt-8">
+                <div class="swiper marquee-swiper w-full relative overflow-hidden z-30 max-h-[85px]">
+                    <div class="swiper-wrapper">
+                        <!-- Slide 1 -->
+                        <div class="swiper-slide">
+                            <img src="src/assets/images/icon-next.svg" alt="Next Icon" />
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">Best selling</h3>
+                            <img src="src/assets/images/icon-prev.svg" alt="Previous Icon" />
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide">
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">New Arrival</h3>
+                       
+                        </div>
+                        <!-- Slide 1 -->
+                        <div class="swiper-slide">
+                            <img src="src/assets/images/icon-next.svg" alt="Next Icon" />
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">Best selling</h3>
+                            <img src="src/assets/images/icon-prev.svg" alt="Previous Icon" />
+                            
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide">
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">New Arrival</h3>
+                            
+                        </div>
+                        <!-- Slide 1 -->
+                        <div class="swiper-slide">
+                            <img src="src/assets/images/icon-next.svg" alt="Next Icon" />
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">Best selling</h3>
+                            <img src="src/assets/images/icon-prev.svg" alt="Previous Icon" />
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide">
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase">New Arrival</h3>
+                            
+                        </div>
+                        <!-- Slide 1 -->
+                        <div class="swiper-slide">
+                            <img src="src/assets/images/icon-next.svg" alt="Next Icon" />
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">Best selling</h3>
+                            <img src="src/assets/images/icon-prev.svg" alt="Previous Icon" />
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="swiper-slide">
+                            <h3 class="text-white text-[24px] md:text-[60px] font-[900] font-heading uppercase px-16">New Arrival</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content py-28 px-4 bg-white">
+                <div class="flex flex-col md:flex-row md:justify-between max-w-[1092px] mx-auto">
+                    <div class="card flex flex-col mb-10 md:mb-0 md:max-w-[280px]">
+                        <h2 class="uppercase text-black text-[16] font-[700] mb-2">Wordwide shipping</h2>
+                        <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo, turpis elit ultricies justo, vitae molestie quam justo ut lacus. Proin vitae</p>
+                    </div>
+                    <div class="card flex flex-col mb-10 md:mb-0 md:max-w-[280px]">
+                        <h2 class="uppercase text-black text-[16] font-[700] mb-2">Customer service</h2>
+                        <p class="text-gray-600 text-sm"><u>Lorem ipsum dolor sit amet</u>, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo, turpis elit ultricies justo, vitae molestie quam justo ut lacus. Proin vitae</p>
+                    </div>
+                    <div class="card flex flex-col mb-10 md:mb-0 md:max-w-[280px]">
+                        <h2 class="uppercase text-black text-[16] font-[700] mb-2">Secure payment</h2>
+                        <p class="text-gray-600 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo, turpis elit ultricies justo, vitae molestie quam justo ut lacus. Proin vitae</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="faq bg-black py-24 px-4">
+                <h2 class="text-white text-center text-[24px] md:text-[40px] font-[900] font-heading">FREQUENTLY ASKED QUESTIONS</h2>
+                <p class="text-white text-center text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare, nisl non rhoncus commodo.</p>
+                <div class="max-w-[1092px] mx-auto mt-8" x-data="{ 
+                    activeTab: 'order',
+                    openAccordion: null 
+                }">
+                    <!-- Tab Navigation -->
+                    <div class="flex max-w-[580px] mx-auto md:flex-row flex-col items-center justify-center md:justify-between mb-6">
+                        <button 
+                            @click="activeTab = 'order'; openAccordion = null" 
+                            class="w-[86px] h-[33px] px-2 mb-2 rounded-full text-[13px] border border-0.5 border-[#828282] text-center transition-colors duration-200 uppercase"
+                            :class="activeTab === 'order' ? 'bg-white text-black' : 'bg-[#333333] text-white '"
+                        >
+                            Orders
+                        </button>
+                        <button 
+                            @click="activeTab = 'shipping'; openAccordion = null" 
+                            class="w-[93px] h-[33px] px-2 mb-2 rounded-full text-[13px] border border-0.5 border-[#828282] text-center transition-colors duration-200 uppercase"
+                            :class="activeTab === 'shipping' ? 'bg-white text-black' : 'bg-[#333333] text-white'"
+                        >
+                            Shipping
+                        </button>
+                        <button 
+                            @click="activeTab = 'return'; openAccordion = null" 
+                            class="w-[191px] h-[33px] px-2 mb-2 rounded-full text-[13px] border border-0.5 border-[#828282] text-center transition-colors duration-200 uppercase"
+                            :class="activeTab === 'return' ? 'bg-white text-black' : 'bg-[#333333] text-white'"
+                        >
+                            Returns & Exchanges
+                        </button>
+                        <button 
+                            @click="activeTab = 'sizing'; openAccordion = null" 
+                            class="w-[163px] h-[33px] px-2 mb-2 rounded-full text-[13px] border border-0.5 border-[#828282] text-center transition-colors duration-200 uppercase"
+                            :class="activeTab === 'sizing' ? 'bg-white text-black' : 'bg-[#333333] text-white'"
+                        >
+                            Sizing & Products
+                        </button>
+                    </div>
+
+                    <!-- Order Tab Content -->
+                    <div x-show="activeTab === 'order'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                        <div class="space-y-1">
+                            <!-- Order FAQ 1 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'order-1' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white text-md uppercase">How can I track my order?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666] text-sm">
+                                        You can track your order by logging into your account and visiting the "Order History" section. You'll also receive tracking information via email once your order has been shipped.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Order FAQ 2 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'order-2' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">Can I modify or cancel my order?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666] text-sm">
+                                        Orders can be modified or canceled within 1 hour of placement. Please contact our customer service immediately if you need to make changes to your order.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Order FAQ 3 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'order-3' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">What payment methods do you accept?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666] text-sm">
+                                        We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and Apple Pay. All payments are processed securely.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Tab Content -->
+                    <div x-show="activeTab === 'shipping'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                        <div class="space-y-1">
+                            <!-- Shipping FAQ 1 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'shipping-1' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">How much does shipping cost?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666] text-sm">
+                                        Shipping is free on all orders over $50. For orders under $50, standard shipping costs $5.99. Express shipping options are also available at checkout.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Shipping FAQ 2 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'shipping-2' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">How long will it take to receive my order?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666]">
+                                        Standard shipping typically takes 3-5 business days. Express shipping takes 1-2 business days. International shipping times vary by location.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Shipping FAQ 3 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'shipping-3' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">Do you ship internationally?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-6 text-[#666666]">
+                                        Yes, we ship to most countries worldwide. International shipping rates and delivery times will be calculated at checkout based on your location.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Return Tab Content -->
+                    <div x-show="activeTab === 'return'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                        <div class="space-y-1">
+                            <!-- Return FAQ 1 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'return-1' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">What is your return policy?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-4 text-[#666666]">
+                                        We offer a 30-day return policy for unused items in original packaging. Simply initiate a return through your account or contact our customer service.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Return FAQ 2 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'return-2' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">How do I process a return?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-4 text-[#666666]">
+                                        To process a return, log into your account, go to your orders, and select "Return Item". Print the return label, pack your item securely, and drop it off at any shipping carrier location.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Return FAQ 3 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'return-3' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">When will I receive my refund?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-4 text-[#666666]">
+                                        Refunds are processed within 3-5 business days after we receive and inspect your return. The credit will appear on your original payment method within 5-7 business days.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sizing Tab Content -->
+                    <div x-show="activeTab === 'sizing'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                        <div class="space-y-1">
+                            <!-- Sizing FAQ 1 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'sizing-1' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">How do I find my correct size?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-4 text-[#666666]">
+                                        Check our detailed size guide on each product page. We recommend measuring yourself and comparing with our size chart. When in doubt between two sizes, we suggest sizing up.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Sizing FAQ 2 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'sizing-2' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white uppercase">Are your sizes true to fit?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="pb-4 text-[#666666]">
+                                        Yes, our sizes generally run true to standard sizing. However, fit can vary by style. Check individual product reviews for specific fit feedback from other customers.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Sizing FAQ 3 -->
+                            <div class="border-b border-[#1A1A1A]" x-data="{ id: 'sizing-3' }">
+                                <button @click="openAccordion = openAccordion === id ? null : id" class="w-full py-4 text-left flex justify-between items-center">
+                                    <h4 class="font-[700] text-white">What if I order the wrong size?</h4>
+                                    <img src="src/assets/images/icon-white-dropdown.svg" alt="Icon dropdown" class="transform transition-transform duration-200" :class="{ 'rotate-180': openAccordion === id }">
+                                </button>
+                                <div x-show="openAccordion === id" x-collapse.duration.300ms>
+                                    <p class="px-6 pb-4 text-[#666666]">
+                                        Don't worry! You can easily exchange your item for a different size within 30 days of purchase. Visit our returns center to initiate an exchange.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="inquiry bg-white py-16 px-4"
+                x-data="{ 
+                formData: {
+                    selectedType: 'onsite',
+                    fullName: '',
+                    email: 'Plaimanas@gmail.com',
+                    phone: '',
+                    subject: 'Select Subject*',
+                    agreed: false
+                },
+                dropdownOpen: false,
+                subjects: ['General inquiry', 'Job Application', 'Media & Press'],
+                
+                submitForm() {
+                    // เช็คความเรียบร้อยก่อนส่ง
+                    if(!this.formData.agreed) {
+                        alert('Please agree to terms & conditions');
+                        return;
+                    }
+                    if(this.formData.subject === 'Select Subject*') {
+                        alert('Please select a subject');
+                        return;
+                    }
+
+                    // แสดงข้อมูลทั้งหมดใน Console เมื่อกดส่ง
+                    console.log('Form Submitted Successfully:', JSON.parse(JSON.stringify(this.formData)));
+                    alert('Form submitted!');
+                }
+            }">
+                <div class="max-w-[1092px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="md:max-w-[304px]">
+                        <h2 class="xs:text-[38px] text-[40px] text-black font-[900] leading-none uppercase font-heading mb-5">
+                            Make an<br class="hidden md:inline" /> Inquiry
+                        </h2>
+                        <p class="text-black text-sm max-w-sm leading-1">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                            Nam ornare, nisl non rhoncus commodo.
+                        </p>
+                    </div>
+                    <div class="space-y-8">
+                        <form @submit.prevent="submitForm()" >
+                            
+                            
+                            <div class="flex items-center mb-8">
+                                <template x-for="type in ['onsite', 'hybrid']">
+                                    <label class="flex items-center space-x-2 pr-[20px] cursor-pointer">
+                                        <div class="relative flex items-center justify-center">
+                                            <input type="radio" name="inquiry_type" :value="type" x-model="formData.selectedType" class="sr-only">
+                                            <div :class="formData.selectedType === type ? 'border-gray-500' : 'border-gray-300'"
+                                                class="w-[18px] h-[18px] rounded-full border transition-colors bg-white flex items-center justify-center">
+                                                <div x-show="formData.selectedType === type" 
+                                                    class="w-[10px] h-[10px] rounded-full bg-black"></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm capitalize" 
+                                            :class="formData.selectedType === type ? 'text-black' : 'text-gray-400'" 
+                                            x-text="type"></span>
+                                    </label>
+                                </template>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div class="relative border-b border-gray-500 pb-1">
+                                    <input type="text" name="full_name" id="fullname" x-model="formData.fullName" placeholder=" " required
+                                        class="peer block w-full appearance-none focus:outline-none bg-transparent pt-2 px-2 pb-2 text-sm" />
+                                    <label for="fullname" class="absolute left-0 top-4 text-gray-400 duration-300 transform -translate-y-7 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7 text-sm">
+                                        Full name*
+                                    </label>
+                                </div>
+
+                                <div class="relative border-b border-gray-500 pb-1">
+                                    <input type="email" name="email" id="email" x-model="formData.email" placeholder=" " required
+                                        class="peer block w-full appearance-none focus:outline-none bg-transparent pt-2 px-2 pb-2 text-sm" />
+                                    <label for="email" class="absolute left-0 top-4 text-gray-400 duration-300 transform -translate-y-7 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7 text-sm">
+                                        Email*
+                                    </label>
+                                </div>
+
+                                <div class="relative border-b border-gray-500 pb-1">
+                                    <input type="tel" name="phone" id="phone" x-model="formData.phone" placeholder=" " required
+                                        class="peer block w-full appearance-none focus:outline-none bg-transparent pt-2 px-2 pb-2 text-sm" />
+                                    <label for="phone" class="absolute left-0 top-4 text-gray-400 duration-300 transform -translate-y-7 scale-75 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7 text-sm">
+                                        Phone Number*
+                                    </label>
+                                </div>
+
+                                <div class="relative border-b border-gray-500 pb-1" @click.away="dropdownOpen = false">
+                                    <div class="flex justify-between items-center cursor-pointer pt-4" @click="dropdownOpen = !dropdownOpen">
+                                        <span :class="formData.subject === 'Select Subject*' ? 'text-gray-400' : 'text-black'" 
+                                            x-text="formData.subject" class="text-sm"></span>
+                                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="dropdownOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div x-show="dropdownOpen" x-transition class="absolute z-50 left-0 w-full mt-2 py-2 bg-[#F8F8F8] shadow-md border border-gray-100">
+                                        <template x-for="item in subjects" :key="item">
+                                            <div @click="formData.subject = item; dropdownOpen = false" 
+                                                class="px-3 py-1 text-sm text-black hover:bg-gray-100 cursor-pointer" x-text="item"></div>
+                                        </template>
+                                    </div>
+                                    <input type="hidden" name="subject" :value="formData.subject">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 my-4">
+                                <label class="relative flex items-center cursor-pointer">
+                                    <input type="checkbox" name="terms" x-model="formData.agreed" 
+                                        class="peer appearance-none w-[18px] h-[18px] border border-gray-300 rounded-sm bg-white checked:bg-black checked:border-black transition-all">
+                                    <svg class="absolute w-3 h-3 text-white hidden peer-checked:block left-[3px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="4">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </label>
+                                <span class="text-sm text-gray-400">I agree to all terms & conditions</span>
+                            </div>
+
+                            <button type="submit" 
+                                    class="bg-black mt-3 text-white px-14 py-4 text-sm  w-[140px] hover:bg-neutral-800 transition-all uppercase">
+                                Send
+                            </button>
+                            
+                        </form>
+                    </div>
+               </div> 
+            </section>
+            <div class="mx-4 md:mx-6 mb-2">
+                <a href="" title="Home Page" class="text-sm text-black uppercase">
+                    Homepage
+                </a>
+            </div>
+        </main>
+        <footer class="bg-[#F8F9F8] px-4 py-8 md:px-16 font-sans text-black">
+            <div class="max-w-8xl mx-auto">
+                <div class="grid grid-cols-2 md:grid-cols-12 gap-y-12 gap-x-8 pb-20">
+                    <div class="md:col-span-2 space-y-6">
+                        <h4 class="text-[13px] text-black uppercase">About</h4>
+                        <nav>
+                            <ul class="space-y-4 text-gray-500 text-[12px]">
+                                <li><a href="" title="Women" class="hover:text-black transition-colors">Women</a></li>
+                                <li><a href="" title="Collections" class="hover:text-black transition-colors">Collections</a></li>
+                                <li><a href="" title="Editorial" class="hover:text-black transition-colors">Editorial</a></li>
+                                <li><a href="" title="Stories" class="hover:text-black transition-colors">Stories</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-6">
+                        <h4 class="text-[13px] text-black uppercase">Help</h4>
+                        <nav>
+                            <ul class="space-y-4 text-gray-500 text-[12px]">
+                                <li><a href="" title="Payment Notification" class="hover:text-black transition-colors">Payment Notification</a></li>
+                                <li><a href="" title="Customer Service" class="hover:text-black transition-colors">Customer Service</a></li>
+                                <li><a href="" title="FAQ" class="hover:text-black transition-colors">FAQ</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-6">
+                        <h4 class="text-[13px] text-black uppercase">Social</h4>
+                        <nav>
+                            <ul class="space-y-4 text-gray-500 text-[12px]">
+                                <li><a href="" title="Instagram" class="hover:text-black transition-colors">Instagram</a></li>
+                                <li><a href="" title="Facebook" class="hover:text-black transition-colors">Facebook</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-6">
+                        <h4 class="text-[13px] text-black uppercase">Legal</h4>
+                        <nav>
+                            <ul class="space-y-4 text-gray-500 text-[12px]">
+                                <li><a href="" title="Terms & Conditions" class="hover:text-black transition-colors">Terms & Conditions</a></li>
+                                <li><a href="" title="Privacy Policy" class="hover:text-black transition-colors">Privacy Policy</a></li>
+                                <li><a href="" title="Cookies Policy" class="hover:text-black transition-colors">Cookies Policy</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-span-2 md:col-span-4 space-y-6">
+                        <h4 class="text-[13px] text-black uppercase">Newsletter</h4>
+                        <div class="space-y-4">
+                            <div class="relative border-b border-black pb-2 mb-1">
+                                <input type="email" name="emailNewsletter" placeholder="Email" class="w-full bg-transparent outline-none text-sm placeholder-gray-400" />
+                            </div>
+                            <button class="w-full bg-[#E5E5E5] hover:bg-black hover:text-white text-black py-4 text-xs transition-colors uppercase">
+                                Subscribe
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="pt-8 border-t border-transparent flex flex-row justify-between items-start md:items-center text-xs font-medium">
+                    <p>©PLAIMANAS</p>
+                    <p>Web by ::*</p>
+                </div>
+
+            </div>
+        </footer>
+
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+        function languageSwitcher() {
+            return {
+                currentLanguage: 'en', // ภาษาเริ่มต้น
+                isHovering: false,
+                translations: {
+                    th: {
+                        logo: 'แบรนด์เนม',
+                        women: 'ผู้หญิง',
+                        collections: 'คอลแล็คชั่น',
+                        editorial: 'บทความ',
+                        news: 'ข่าว',
+                        stories: 'เรื่องราว',
+                        signin: 'เข้าสู่ระบบ',
+                    },
+                    en: {
+                        logo: 'BrandName',
+                        women: 'Women',
+                        collections: 'Collections',
+                        editorial: 'Editorial',
+                        news: 'News',
+                        stories: 'Stories',
+                        signin: 'Sign In',
+                    }
+                },
+                
+                // ฟังก์ชันสำหรับแปลข้อความ
+                t(key) {
+                    return this.translations[this.currentLanguage][key] || key;
+                },
+                
+                // ฟังก์ชันเปลี่ยนภาษา
+                switchLanguage(lang) {
+                    this.currentLanguage = lang;
+                    localStorage.setItem('preferred-language', lang);
+                    // อัพเดท meta tag language
+                    document.documentElement.lang = lang;
+                },
+                
+                // ฟังก์ชันเริ่มต้น
+                init() {
+                    // โหลดภาษาที่เคยเลือกจาก localStorage
+                    const savedLang = localStorage.getItem('preferred-language');
+                    if (savedLang && (savedLang === 'th' || savedLang === 'en')) {
+                        this.currentLanguage = savedLang;
+                    } else {
+                        // หรือใช้ภาษาเบราว์เซอร์
+                        const browserLang = navigator.language.split('-')[0];
+                        this.currentLanguage = browserLang === 'th' ? 'th' : 'en';
+                    }
+                    
+                    document.documentElement.lang = this.currentLanguage;
+                }
+            }
+        }
+    </script>
+        <script>
+            (function(){
+                const logo = document.getElementById('plaimanas-logo');
+                if(!logo) return;
+                const THRESHOLD = 1; // px scrolled before shrinking (any scroll)
+                function onScroll(){
+                    if(window.scrollY > THRESHOLD){
+                        logo.classList.add('shrink');
+                    } else {
+                        logo.classList.remove('shrink');
+                    }
+                }
+                window.addEventListener('scroll', onScroll, { passive: true });
+                // initialize state
+                onScroll();
+            })();
+        </script>
+  </body>
+</html>
