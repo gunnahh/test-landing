@@ -907,22 +907,5 @@
             }
         }
     </script>
-        <script>
-            (function(){
-                const logo = document.getElementById('plaimanas-logo');
-                if(!logo) return;
-                const THRESHOLD = 1; // px scrolled before shrinking (any scroll)
-                function onScroll(){
-                    if(window.scrollY > THRESHOLD){
-                        logo.classList.add('shrink');
-                    } else {
-                        logo.classList.remove('shrink');
-                    }
-                }
-                window.addEventListener('scroll', onScroll, { passive: true });
-                // initialize state
-                onScroll();
-            })();
-        </script>
   </body>
 </html>
