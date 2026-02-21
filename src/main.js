@@ -55,3 +55,34 @@ const swiperTextSlide = new Swiper('.marquee-swiper', {
     pauseOnMouseEnter: false,
     },
 });
+
+const swiperBestseller = new Swiper('.swiper-bestseller', {
+    // Modules
+    modules: [EffectFade, Autoplay],
+    
+    // Options
+    speed: 1000,
+    loop: true,
+    spaceBetween: 0,
+    autoplay: {
+        delay: 5000,                    // 5 วินาทีต่อสไลด์
+        disableOnInteraction: false,     // ไม่หยุดเมื่อ user interact
+        pauseOnMouseEnter: true,         // หยุดเมื่อ hover
+        reverseDirection: false,
+        waitForTransition: true,         // รอ transition เสร็จก่อน
+    },
+    
+    // บังคับให้ autoplay ทำงานทันที
+    on: {
+        init: function() {
+            // เริ่ม autoplay ทันทีที่ initialize
+            this.autoplay.start();
+        },
+        slideChange: function() {
+            console.log('Slide changed to:', this.realIndex);
+        }
+    },
+    
+    // Effects
+    effect: 'fade',
+});
